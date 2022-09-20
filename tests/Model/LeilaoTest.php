@@ -11,27 +11,25 @@ class LeilaoTest extends TestCase
 {
     public function testLeilaoNaoDeveReceberLancesRepetidos()
     {
-        // Arrange
+        self::expectException(\DomainException::class);
+        self::expectExceptionMessage('Usuário não pode propor 2 lances seguidos');
+
         $leilao = new Leilao('Variante');
         $ana = new Usuario('Ana');
 
-        // Act
         $leilao->recebeLance(new Lance($ana, 1000));
         $leilao->recebeLance(new Lance($ana, 1000));
-
-        // Assert
-        self::assertCount(1, $leilao->getLances());
-        self::assertEquals(1000, $leilao->getLances()[0]->getValor());
     }
 
     public function testLeilaoNaoDeveAceitarMaisDe5LancesPorUsuario()
     {
-        // Arrange
+        self::expectException(\DomainException::class);
+        self::expectExceptionMessage('Usuário não pode propor mais de 5 lances por leilão');
+
         $leilao = new Leilao('Variante');
         $maria = new Usuario('Maria');
         $joao = new Usuario('João');
 
-        // Act
         $leilao->recebeLance(new Lance($joao, 1000));
         $leilao->recebeLance(new Lance($maria, 1500));
         $leilao->recebeLance(new Lance($joao, 2000));
@@ -44,9 +42,6 @@ class LeilaoTest extends TestCase
         $leilao->recebeLance(new Lance($maria, 5500));
 
         $leilao->recebeLance(new Lance($joao, 6000));
-
-        self::assertCount(10, $leilao->getLances());
-        self::assertEquals(5500, $leilao->getLances()[count($leilao->getLances()) - 1]->getValor());
     }
     
     

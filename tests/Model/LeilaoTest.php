@@ -9,6 +9,47 @@ use PHPUnit\Framework\TestCase;
 
 class LeilaoTest extends TestCase
 {
+    public function testLeilaoNaoDeveReceberLancesRepetidos()
+    {
+        // Arrange
+        $leilao = new Leilao('Variante');
+        $ana = new Usuario('Ana');
+
+        // Act
+        $leilao->recebeLance(new Lance($ana, 1000));
+        $leilao->recebeLance(new Lance($ana, 1000));
+
+        // Assert
+        self::assertCount(1, $leilao->getLances());
+        self::assertEquals(1000, $leilao->getLances()[0]->getValor());
+    }
+
+    public function testLeilaoNaoDeveAceitarMaisDe5LancesPorUsuario()
+    {
+        // Arrange
+        $leilao = new Leilao('Variante');
+        $maria = new Usuario('Maria');
+        $joao = new Usuario('João');
+
+        // Act
+        $leilao->recebeLance(new Lance($joao, 1000));
+        $leilao->recebeLance(new Lance($maria, 1500));
+        $leilao->recebeLance(new Lance($joao, 2000));
+        $leilao->recebeLance(new Lance($maria, 2500));
+        $leilao->recebeLance(new Lance($joao, 3000));
+        $leilao->recebeLance(new Lance($maria, 3500));
+        $leilao->recebeLance(new Lance($joao, 4000));
+        $leilao->recebeLance(new Lance($maria, 4500));
+        $leilao->recebeLance(new Lance($joao, 5000));
+        $leilao->recebeLance(new Lance($maria, 5500));
+
+        $leilao->recebeLance(new Lance($joao, 6000));
+
+        self::assertCount(10, $leilao->getLances());
+        self::assertEquals(5500, $leilao->getLances()[count($leilao->getLances()) - 1]->getValor());
+    }
+    
+    
     /**
      * @dataProvider geraLances
      */
